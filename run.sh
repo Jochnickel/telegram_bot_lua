@@ -1,3 +1,3 @@
 cd "$(dirname "$0")"
-git pull
+printf "git: " && git pull
 python3 main.py
