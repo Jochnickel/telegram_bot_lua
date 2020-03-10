@@ -10,8 +10,12 @@ bot = Bot(token.read())
 token.close()
 
 def execLua(code):
-	try: return [subprocess.check_output(['timeout','-k','10','10','docker','run','-it','jochnickel/lua','lua5.3','-e',code])]
-	except subprocess.CalledProcessError as e: return ['Lua interrupted:',e.output.decode()]
+	try:
+		return [subprocess.check_output(['timeout','-k','10','10','docker','run','-t','jochnickel/lua','lua5.3','-e',code])]
+	except subprocess.CalledProcessError as e:
+		errcode = (124==e.returncode) and "timeout" or (1==e.returncode) and "error" or "returncode(%s)"%e.returncode
+		print(e.returncode,e.output)
+		return [ 'Lua interrupted (%s):'%errcode , e.output.decode() ]
 
 
 def onMsg(update):
