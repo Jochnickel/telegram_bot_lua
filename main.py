@@ -13,7 +13,6 @@ def execLua(code):
 	try:
 		log = '>>starting lua\n'
 		log = '%s%s'%(log,subprocess.check_output(['timeout','-k','10','--foreground','10','docker','run','-t','jochnickel/lua','lua5.3','-e',code]).decode())
-#		status = (not log or log.isspace()) and '`Lua finished (no output)`' or '`Lua finished`'
 		return '%s>>lua finished'%log, None
 	except subprocess.CalledProcessError as e:
 		errname = (124==e.returncode) and "timeout" or (1==e.returncode) and "error" or "returncode(%s)"%e.returncode
