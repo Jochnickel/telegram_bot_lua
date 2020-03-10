@@ -12,13 +12,13 @@ token.close()
 def execLua(code):
 	try:
 		log = '>>starting lua\n'
-		log = '%s%s\n'%(log,subprocess.check_output(['timeout','-k','10','--foreground','10','docker','run','-t','jochnickel/lua','lua5.3','-e',code]).decode())
+		log = '%s%s'%(log,subprocess.check_output(['timeout','-k','10','--foreground','10','docker','run','-t','jochnickel/lua','lua5.3','-e',code]).decode())
 #		status = (not log or log.isspace()) and '`Lua finished (no output)`' or '`Lua finished`'
-		return '%s>>lua finished'%log
+		return '%s>>lua finished'%log, None
 	except subprocess.CalledProcessError as e:
-		errcode = (124==e.returncode) and "timeout" or (1==e.returncode) and "error" or "returncode(%s)"%e.returncode
-		log = '%s%s\n'%(log,e.output.decode())
-		return [ log, '`Lua interrupted (%s)`'%errcode]
+		errname = (124==e.returncode) and "timeout" or (1==e.returncode) and "error" or "returncode(%s)"%e.returncode
+		log = '%s>>lua crashed\n%s'%(log,e.output.decode())
+		return [ log, '`Lua interrupted (%s)`'%errname]
 
 
 def onMsg(update):
