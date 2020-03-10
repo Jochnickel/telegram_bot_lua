@@ -1,12 +1,16 @@
 from telebot.telebot import Bot
 import subprocess
+import os
+
+subprocess.call(['docker','--version'],stdout=open(os.devnull, 'wb'))
+subprocess.call(['timeout','--version'],stdout=open(os.devnull, 'wb'))
 
 token = open('token.txt','r')
 bot = Bot(token.read())
 token.close()
 
 def execLua(code):
-	try: return [subprocess.check_output(['docker','run','-it','jochnickel/lua','lua5.3','-e',code])]
+	try: return [subprocess.check_output(['timeout','-k','10','10','docker','run','-it','jochnickel/lua','lua5.3','-e',code])]
 	except subprocess.CalledProcessError as e: return ['Lua interrupted:',e.output.decode()]
 
 
