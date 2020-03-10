@@ -7,7 +7,7 @@ token.close()
 
 def execLua(code):
 	try: return [subprocess.check_output(['docker','run','-it','jochnickel/lua','lua5.3','-e',code])]
-	except subprocess.CalledProcessError as e: return ['Error:',e.output.decode()]
+	except subprocess.CalledProcessError as e: return ['Lua interrupted:',e.output.decode()]
 
 
 def onMsg(update):
