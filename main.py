@@ -2,7 +2,7 @@ from telebot.telebot import Bot
 import subprocess
 import os
 
-subprocess.call('docker run --rm -t jochnickel/lua timeout -k 5 5 lua5.3 -e print("Lua_is_ready.")'.split(),timeout=20)
+subprocess.call('docker run --rm -t jochnickel/lua timeout -s SIGKILL 5 lua5.3 -e print("Lua_is_ready.")'.split(),timeout=20)
 print()
 
 token = open('token.txt','r')
@@ -13,7 +13,7 @@ def execLua(code):
 	log = '>>starting lua\n'
 
 	try:
-		log += subprocess.check_output('docker run --rm -t jochnickel/lua timeout -k 10 10 lua5.3 -e'.split()+[code], timeout = 15, encoding = 'utf-8')
+		log += subprocess.check_output('docker run --rm -t jochnickel/lua timeout -s SIGKILL 10 lua5.3 -e'.split()+[code], timeout = 15, encoding = 'utf-8')
 		log += '>>lua finished'
 		errmsg = None
 	except subprocess.CalledProcessError as e:
