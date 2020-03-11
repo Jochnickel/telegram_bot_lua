@@ -2,7 +2,7 @@ from telebot.telebot import Bot
 import subprocess
 import os
 
-subprocess.call(['timeout','-k','5','--foreground','5','docker','run','-t','jochnickel/lua','lua5.3','-e','print"Lua is ready."'])
+subprocess.call('docker run --rm -t jochnickel/lua timeout -k 5 5 lua5.3 -e print("Lua_is_ready.")'.split(),timeout=20)
 print()
 
 token = open('token.txt','r')
@@ -10,14 +10,21 @@ bot = Bot(token.read())
 token.close()
 
 def execLua(code):
+	log = '>>starting lua\n'
+
 	try:
-		log = '>>starting lua\n'
-		log = '%s%s'%(log,subprocess.check_output(['timeout','-k','10','--foreground','10','docker','run','-t','jochnickel/lua','lua5.3','-e',code]).decode())
-		return '%s>>lua finished'%log, None
+		log += subprocess.check_output('docker run --rm -t jochnickel/lua timeout -k 10 10 lua5.3 -e'.split()+[code], timeout = 15, encoding = 'utf-8')
+		log += '>>lua finished'
+		errmsg = None
 	except subprocess.CalledProcessError as e:
-		errname = (124==e.returncode) and "timeout" or (1==e.returncode) and "error" or "returncode(%s)"%e.returncode
-		log = '%s>>lua crashed\n%s'%(log,e.output.decode())
-		return [ log, '`Lua interrupted (%s)`'%errname]
+		errname = (124==e.returncode) and "timeout" or (1==e.returncode) and "error" or "%s"%e
+		errmsg = '`Lua interrupted (%s)`'%errname
+		log += e.output
+		log += '>>lua crashed\n'
+	except:
+		errmsg = 'Unknown Error'
+		log += '>>lua crashed\n'
+	return log, errmsg
 
 
 def onMsg(update):
